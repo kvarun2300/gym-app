@@ -13,10 +13,13 @@ const { apiLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 
+// Trust Nginx reverse proxy
+app.set('trust proxy', 1);
+
 // Security headers
 app.use(
   helmet({
-    crossOriginResourcePolicy: { policy: 'cross-origin' }, // allow serving uploaded images to frontend origin
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
   })
 );
 
@@ -45,7 +48,7 @@ if (process.env.NODE_ENV === 'development') {
 // Rate limiting on all API routes
 app.use('/api', apiLimiter);
 
-// Static file serving for uploaded images (profiles, trainers, gallery, blog, progress)
+// Static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API routes
@@ -59,7 +62,7 @@ app.get('/', (req, res) => {
   });
 });
 
-// 404 + error handling (must be last)
+// 404 + error handling
 app.use(notFoundHandler);
 app.use(errorHandler);
 
